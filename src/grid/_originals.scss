@@ -1,0 +1,26 @@
+@charset "UTF-8";
+
+/* flex-direction style */
+$original--flex-directions: (
+  row, row-reverse, column, column-reverse
+) !default;
+
+/* flex-wrap style */
+$original--flex-wraps: (
+  nowrap, wrap, wrap-reverse
+) !default;
+
+/* justify-content style */
+$original--flex-justify-contents: (
+  flex-start, flex-end, center, space-between, space-around
+) !default;
+
+/* align-items style */
+$original--flex-align-items: (
+  stretch, flex-start, flex-end, center, baseline
+) !default;
+
+/* align-content style */
+$original--flex-align-contents: (
+  stretch, flex-start, flex-end, center, space-between, space-around
+) !default;

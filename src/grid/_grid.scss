@@ -1,0 +1,810 @@
+@charset "UTF-8";
+
+// Variables
+@import "variables";
+@import "originals";
+
+/*
+ * Container: provides base container
+ * - self-contained element
+ * use: @include vi-grid--container({?gutter: units}, {?gutter-method: string});
+ * parameters:
+ *   $gutter        - indents on the sides
+ *                    optional parameter
+ *                    type: units
+ *                    default value: 20px
+ *                    possible values: any units value
+ *   $gutter-method - type of indents
+ *                    optional parameter
+ *                    type: string
+ *                    default value: padding
+ *                    possible values: padding|margin
+ */
+@mixin vi-grid--container(
+  $gutter:        $vi-grid--gutter-container,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  box-sizing:              border-box;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+  @if $gutter-method == padding {
+    margin-right: auto;
+    margin-left:  auto;
+  }
+}
+
+/*
+ * Row: provides container for your flex elements
+ * - self-contained element
+ * use: @include vi-grid--row({?direction: string}, {?align: null|string}, {?gutter: units}, {?gutter-method: string});
+ * parameters:
+ *   $direction     - direction of flex
+ *                    optional parameter
+ *                    type: string
+ *                    default value: row
+ *                    possible values: row|row-reverse|column|column-reverse
+ *   $align         - align of items
+ *                    optional parameter
+ *                    type: string|null
+ *                    default value: null
+ *                    possible values: flex-start|flex-end|center|space-between|space-around|stretch
+ *                    you can use $vi-grid--row-align variable for it
+ *   $gutter        - indents on the sides
+ *                    optional parameter
+ *                    type: units
+ *                    default value: 10px
+ *                    possible values: any units value
+ *   $gutter-method - type of indents
+ *                    optional parameter
+ *                    type: string
+ *                    default value: padding
+ *                    possible values: padding|margin
+ */
+@mixin vi-grid--row(
+  $direction:     $vi-grid--direction,
+  $align:         null,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  display:                 flex;
+  flex-direction:          $direction;
+  flex-wrap:               wrap;
+  box-sizing:              border-box;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+  @if $align {
+    align-content: $align;
+  }
+}
+
+/*
+ * Auto-column: adds auto sizing column to your Row
+ * - the element with this class must be inside the element with class @vi-grid--row
+ * use: @include vi-grid--column-auto({?gutter: units}, {?gutter-method: string});
+ * alias: @include vi-grid--col-auto({?gutter: units}, {?gutter-method: string});
+ * parameters:
+ *   $gutter        - indents on the sides
+ *                    optional parameter
+ *                    type: units
+ *                    default value: 5px
+ *                    possible values: any units value
+ *   $gutter-method - type of indents
+ *                    optional parameter
+ *                    type: string
+ *                    default value: padding
+ *                    possible values: padding|margin
+ */
+@mixin vi-grid--column-auto(
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  flex-grow:               1;
+  flex-basis:              0;
+  max-width:               100%;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+}
+/* alias of vi-grid--column-auto() */
+@mixin vi-grid--col-auto(
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--column-auto($gutter, $gutter-method);
+}
+
+/*
+ * Ranged column: adds column with fixed size
+ * - the element with this class must be inside the element with class @vi-grid--row
+ * use: @include vi-grid--column({!span: int}, {?offset: int}, {?columns: int}, {?safe: bool}, {?gutter: units}, {?gutter-method: string});
+ * alias: @include vi-grid--col({!span: int}, {?offset: int}, {?columns: int}, {?safe: bool}, {?gutter: units}, {?gutter-method: string});
+ * parameters:
+ *   $span          - occupied space
+ *                    required parameter
+ *                    type: int
+ *                    possible values: from 1 to $vi-grid--columns (default value: 12)
+ *   $columns       - number of columns in this row
+ *                    optional parameter
+ *                    type: int
+ *                    default value: 12
+ *                    possible values: any int
+ *   $offset        - offset
+ *                    optional parameter
+ *                    type: int|string|null
+ *                    default value: null
+ *                    possible values: any int|auto
+ *                    max correct value: from 1 to $vi-grid--columns - $span
+ *   $safe          - safe mod
+ *                    optional parameter
+ *                     if it is enabled
+ *                      and if the amount of the indent and width of the element exceeds the number of columns
+ *                      then the width of the element is automatically shortened
+ *                    type: bool
+ *                    default value: true
+ *                    possible values: true|false
+ *   $gutter        - indents on the sides
+ *                    optional parameter
+ *                    type: units
+ *                    default value: 5px
+ *                    possible values: any units value
+ *   $gutter-method - type of indents
+ *                    optional parameter
+ *                    type: string
+ *                    default value: padding
+ *                    possible values: padding|margin
+ */
+@mixin vi-grid--column(
+  $span,
+  $columns:       $vi-grid--columns,
+  $offset:        null,
+  $safe:          $vi-grid--safe,
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @if $span == 0 {
+    $span: 1;
+  }
+  @if $columns == auto {
+    $columns: $vi-grid--columns;
+  }
+  @if $safe and $span > $columns {
+    $span: $columns;
+  }
+  box-sizing:              border-box;
+  flex-grow:               0;
+  flex-shrink:             0;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+  flex-basis:              ((100% / $columns) * $span);
+  max-width:               ((100% / $columns) * $span);
+  @if $offset {
+    @if $safe and $span + $offset > $columns {
+      $offset: $columns - $span;
+    }
+    $span-offset: ((100% / $columns) * 1);
+    margin-left: $span-offset * $offset;
+  }
+}
+/* alias of vi-grid--column() */
+@mixin vi-grid--col(
+  $span,
+  $columns:       $vi-grid--columns,
+  $offset:        null,
+  $safe:          $vi-grid--safe,
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--column($span, $columns, $offset, $safe, $gutter, $gutter-method);
+}
+
+/* HORIZONTAL ALIGNMENT */
+
+/*
+ * Horizontal start: applies horizontal alignment for inside elements from start of the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--start();
+ */
+@mixin vi-grid--start() {
+  justify-content: flex-start;
+  text-align:      start;
+}
+
+/*
+ * Horizontal center: applies horizontal alignment for inside elements by center of the Row
+ * The element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--center();
+ */
+@mixin vi-grid--center() {
+  justify-content: center;
+  text-align:      center;
+}
+
+/*
+ * Horizontal end: applies horizontal alignment for inside elements from end of the Row
+ * The element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--end();
+ */
+@mixin vi-grid--end() {
+  justify-content: flex-end;
+  text-align:      end;
+}
+
+/* VERTICAL ALIGNMENT BY PARENT */
+
+/*
+ * Vertical top: applies vertical alignment for inside elements from top of the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--top();
+ */
+@mixin vi-grid--top() {
+  align-items: flex-start;
+}
+
+/*
+ * Vertical middle: applies vertical alignment for inside elements by middle of the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--middle();
+ * alias: @include vi-grid--mid();
+ */
+@mixin vi-grid--middle() {
+  align-items: center;
+}
+/* alias of vi-grid--middle() */
+@mixin vi-grid--mid() {
+  @include vi-grid--middle();
+}
+
+/*
+ * Vertical bottom: applies vertical alignment for inside elements from bottom of the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--bottom();
+ * alias: @include vi-grid--bot();
+ */
+@mixin vi-grid--bottom() {
+  align-items: flex-end;
+}
+/* alias of vi-grid--bottom() */
+@mixin vi-grid--bot() {
+  @include vi-grid--bottom();
+}
+
+/* VERTICAL ALIGNMENT BY CHILD */
+
+/*
+ * Vertical element top: applies vertical alignment for element inside Row by top
+ * -the element with this class must be on the same level as the element with class vi-grid--column or vi-grid--column-auto
+ * use: @include vi-grid--top-self();
+ */
+@mixin vi-grid--top-self() {
+  align-self: flex-start;
+}
+
+/*
+ * Vertical element middle: applies vertical alignment for element inside Row by middle
+ * -the element with this class must be on the same level as the element with class vi-grid--column or vi-grid--column-auto
+ * use: @include vi-grid--middle-self();
+ * alias: @include vi-grid--mid-self();
+ */
+@mixin vi-grid--middle-self() {
+  align-self: center;
+}
+/* alias of vi-grid--bottom-self() */
+@mixin vi-grid--mid-self() {
+  @include vi-grid--middle-self();
+}
+
+/*
+ * Vertical element bottom: applies vertical alignment for element inside Row by bottom
+ * -the element with this class must be on the same level as the element with class vi-grid--column or vi-grid--column-auto
+ * use: @include vi-grid--bottom-self();
+ * alias: @include vi-grid--bot-self();
+ */
+@mixin vi-grid--bottom-self() {
+  align-self: flex-end;
+}
+/* alias of vi-grid--bottom-self() */
+@mixin vi-grid--bot-self() {
+  @include vi-grid--bottom-self();
+}
+
+/* DISTRIBUTION */
+
+/*
+ * Distribution around: around distribution of the elements inside Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--around();
+ * alias: @include vi-grid--row-around(true, ?, ?, ?, ?);
+ * parameters:
+ *   $withRow       - along with Row
+ *                    optional parameter
+ *                    type: bool
+ *                    default value: false
+ *                    possible values: false|true
+ *   $direction     - direction of flex
+ *                    optional parameter
+ *                    type: string
+ *                    default value: row
+ *                    possible values: row|column
+ *   $align         - align of items
+ *                    optional parameter
+ *                    type: string
+ *                    default value: flex-start
+ *                    possible values: flex-start|flex-end|center|space-between|space-around|stretch
+ *   $gutter        - indents on the sides
+ *                    optional parameter
+ *                    type: units
+ *                    default value: 10px
+ *                    possible values: any units value
+ *   $gutter-method - type of indents
+ *                    optional parameter
+ *                    type: string
+ *                    default value: padding
+ *                    possible values: padding|margin
+ */
+@mixin vi-grid--around(
+  $withRow:       false,
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @if $withRow {
+    @include vi-grid--row($direction, $align, $gutter, $gutter-method);
+  }
+  justify-content: space-around;
+}
+/* alias of vi-grid--around(true) */
+@mixin vi-grid--row-around(
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--around(true, $direction, $align, $gutter, $gutter-method);
+}
+
+/*
+ * Distribution between: between distribution of the elements inside Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--between();
+ * alias: @include vi-grid--row-between(true, ?, ?, ?);
+ * parameters:
+ *   $withRow       - along with Row
+ *                    optional parameter
+ *                    type: bool
+ *                    default value: false
+ *                    possible values: false|true
+ *   $direction     - direction of flex
+ *                    optional parameter
+ *                    type: string
+ *                    default value: row
+ *                    possible values: row|column
+ *   $align         - align of items
+ *                    optional parameter
+ *                    type: string
+ *                    default value: flex-start
+ *                    possible values: flex-start|flex-end|center|space-between|space-around|stretch
+ *   $gutter        - indents on the sides
+ *                    optional parameter
+ *                    type: units
+ *                    default value: 10px
+ *                    possible values: any units value
+ *   $gutter-method - type of indents
+ *                    optional parameter
+ *                    type: string
+ *                    default value: padding
+ *                    possible values: padding|margin
+ */
+@mixin vi-grid--between(
+  $withRow:       false,
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @if $withRow {
+    @include vi-grid--row($direction, $align, $gutter, $gutter-method);
+  }
+  justify-content: space-between;
+}
+/* alias of vi-grid--between(true) */
+@mixin vi-grid--row-between(
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--between(true, $direction, $align, $gutter, $gutter-method);
+}
+
+/* ORDERING */
+
+/*
+ * First in order: puts the element at the beginning of the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--column or @vi-grid--column-auto
+ * use: @include vi-grid--first();
+ * link: https://www.w3schools.com/cssref/css3_pr_order.asp
+ */
+@mixin vi-grid--first() {
+  order: -1;
+}
+
+/*
+ * Last in order: puts the element at the end of the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--column or @vi-grid--column-auto
+ * use: @include vi-grid--last();
+ * link: https://www.w3schools.com/cssref/css3_pr_order.asp
+ */
+@mixin vi-grid--last() {
+  order: 1;
+}
+
+/*
+ * Fixed ordering: sets a specific ordering number for the Column
+ * - the element with this class must be on the same level as the element with class @vi-grid--column or @vi-grid--column-auto
+ * use: @include vi-grid--order({!order: int});
+ * link: https://www.w3schools.com/cssref/css3_pr_order.asp
+ * parameters:
+ *   $span - order of item
+ *           required parameter
+ *           type: int
+ *           possible values: any int
+ */
+@mixin vi-grid--order(
+  $order
+) {
+  order: $order;
+}
+
+/* REVERSING */
+
+/*
+ * Reverse elements: sets the reverse order for the elements in the Row
+ * - the element with this class must be on the same level as the element with class @vi-grid--row
+ * use: @include vi-grid--reverse({direction: string});
+ * parameters:
+ *   $direction - direction for reverse
+ *                optional parameter
+ *                type: string
+ *                default value: row
+ *                possible values: row|column
+ */
+@mixin vi-grid--reverse(
+  $direction: $vi-grid--reverse-direction
+) {
+  @if $direction == row {
+    flex-direction: row-reverse;
+  } @else if $direction == column {
+    flex-direction: column-reverse;
+  }
+}
+
+/* CONTAINER ORIGINALS */
+
+/*
+ * Flex: sets display flex style
+ * - style for container level
+ * use: @include vi-grid--flex({?display: string}, {?safe: bool});
+ * original style: display
+ * original value: flex
+ * parameters:
+ *   $display - display style
+ *              optional parameter
+ *              type: string
+ *              default value: flex
+ *              possible values: flex|inline-flex|inline|any possible display style values
+ *   $safe    - safe mod
+ *              optional parameter
+ *               if it is enabled you can not use invalid values
+ *              type: bool
+ *              default value: true
+ *              possible values: true|false
+ */
+@mixin vi-grid--flex(
+  $display: flex,
+  $safe:    $vi-grid--safe
+) {
+  @if $safe and $display == flex {
+    display: flex;
+  } @else if  $safe and $display == inline-flex or $display == inline {
+    display: inline-flex;
+  } @else {
+    display: $display;
+  }
+}
+
+/*
+ * Direction: sets flex-direction style
+ * - style for container level
+ * use: @include vi-grid--direction({?direction: string}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_flex-direction.asp
+ * original style: flex-direction
+ * original value: row
+ * parameters:
+ *   $direction - direction style
+ *                optional parameter
+ *                type: string
+ *                default value: row
+ *                possible values: row|row-reverse|column|column-reverse
+ *   $safe      - safe mod
+ *                optional parameter
+ *                 if it is enabled you can not use invalid values
+ *                type: bool
+ *                default value: true
+ *                possible values: true|false
+ */
+@mixin vi-grid--direction(
+  $direction: row,
+  $safe:      $vi-grid--safe
+) {
+  @if $safe == false {
+    flex-direction: $direction;
+  } @else {
+    flex-direction: row;
+    @each $temp in $original--flex-directions {
+      @if $direction == $temp {
+        flex-direction: $temp;
+      }
+    }
+  }
+}
+
+/*
+ * Wrap: sets flex-wrap style
+ * - style for container level
+ * use: @include vi-grid--wrap({?wrap: string}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_flex-wrap.asp
+ * original style: flex-wrap
+ * original value: nowrap
+ * parameters:
+ *   $wrap - wrap style
+ *           optional parameter
+ *           type: string
+ *           default value: nowrap
+ *           possible values: nowrap|wrap|wrap-reverse
+ *   $safe - safe mod
+ *           optional parameter
+ *            if it is enabled you can not use invalid values
+ *           type: bool
+ *           default value: true
+ *           possible values: true|false
+ */
+@mixin vi-grid--wrap(
+  $wrap: null,
+  $safe: $vi-grid--safe
+) {
+  @if $safe == false {
+    flex-wrap: $wrap;
+  } @else {
+    flex-wrap: nowrap;
+    @each $temp in $original--flex-wraps {
+      @if $wrap == $temp {
+        flex-wrap: $temp;
+      }
+    }
+  }
+}
+
+/*
+ * Flow: sets flex-flow style
+ * - style for container level
+ * use: @include vi-grid--flow({?direction: string}, {?wrap: string}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_flex-flow.asp
+ * original style: flex-flow
+ * original value: row, nowrap
+ * parameters:
+ *   $direction - direction style
+ *                optional parameter
+ *                type: string
+ *                default value: row
+ *                possible values: row|row-reverse|column|column-reverse
+ *   $wrap      - wrap style
+ *                optional parameter
+ *                type: string
+ *                default value: nowrap
+ *                possible values: nowrap|wrap|wrap-reverse
+ *   $safe      - safe mod
+ *                optional parameter
+ *                 if it is enabled you can not use invalid values
+ *                type: bool
+ *                default value: true
+ *                possible values: true|false
+ */
+@mixin vi-grid--flow(
+  $direction: row,
+  $wrap:      nowrap,
+  $safe:      $vi-grid--safe
+) {
+  @include vi-grid--direction($direction, $safe);
+  @include vi-grid--wrap($wrap, $safe);
+}
+
+/*
+ * Justify content: sets justify-content style
+ * - style for container level
+ * use: @include vi-grid--justify-content({?justify: string}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_justify-content.asp
+ * original style: justify-content
+ * original value: flex-start
+ * parameters:
+ *   $justify - justify-content style
+ *              optional parameter
+ *              type: string
+ *              default value: flex-start
+ *              possible values: flex-start|flex-end|center|space-between|space-around
+ *   $safe    - safe mod
+ *              optional parameter
+ *               if it is enabled you can not use invalid values
+ *              type: bool
+ *              default value: true
+ *              possible values: true|false
+ */
+@mixin vi-grid--justify-content(
+  $justify: flex-start,
+  $safe:    $vi-grid--safe
+) {
+  @if $safe == false {
+    justify-content: $justify;
+  } @else {
+    justify-content: flex-start;
+    @each $temp in $original--flex-justify-contents {
+      @if $justify == $temp {
+        justify-content: $temp;
+      }
+    }
+  }
+}
+
+/*
+ * Align items: sets align-items style
+ * - style for container level
+ * use: @include vi-grid--align-items({?align: string}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_align-items.asp
+ * original style: align-items
+ * original value: stretch
+ * parameters:
+ *   $align - align-items style
+ *            optional parameter
+ *            type: string
+ *            default value: stretch
+ *            possible values: stretch|flex-start|flex-end|center|baseline
+ *   $safe  - safe mod
+ *            optional parameter
+ *             if it is enabled you can not use invalid values
+ *            type: bool
+ *            default value: true
+ *            possible values: true|false
+ */
+@mixin vi-grid--align-items(
+  $align: stretch,
+  $safe:  $vi-grid--safe
+) {
+  @if $safe == false {
+    align-items: $align;
+  } @else {
+    align-items: stretch;
+    @each $temp in $original--flex-align-items {
+      @if $align == $temp {
+        align-items: $temp;
+      }
+    }
+  }
+}
+
+/*
+ * Align content: sets align-content style
+ * - style for container level
+ * use: @include vi-grid--align-content({?align: string}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_align-content.asp
+ * original style: align-content
+ * original value: stretch
+ * parameters:
+ *   $align - align-content style
+ *            optional parameter
+ *            type: string
+ *            default value: stretch
+ *            possible values: stretch|flex-start|flex-end|center|space-between|space-around
+ *   $safe  - safe mod
+ *            optional parameter
+ *             if it is enabled you can not use invalid values
+ *            type: bool
+ *            default value: true
+ *            possible values: true|false
+ */
+@mixin vi-grid--align-content(
+  $align: stretch,
+  $safe:  $vi-grid--safe
+) {
+  @if $safe == false {
+    align-content: $align;
+  } @else {
+    align-content: stretch;
+    @each $temp in $original--flex-align-contents {
+      @if $align == $temp {
+        align-content: $temp;
+      }
+    }
+  }
+}
+
+/* ITEMS ORIGINALS */
+
+/*
+ * Grow: sets flex-grow style
+ * - style for items level
+ * use: @include vi-grid--grow({?grow: int}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_flex-grow.asp
+ * original style: flex-grow
+ * original value: 0
+ * parameters:
+ *   $grow - grow style
+ *           optional parameter
+ *           type: int
+ *           default style: 0
+ *           possible values: any int
+ *   $safe - safe mod
+ *           optional parameter
+ *            if it is enabled you can not use invalid values
+ *           type: bool
+ *           default value: true
+ *           possible values: true|false
+ */
+@mixin vi-grid--grow(
+  $grow: 0,
+  $safe: $vi-grid--safe
+) {
+  @if $safe and type-of($grow) == number {
+    flex-grow: $grow;
+  } @else {
+    flex-grow: $grow;
+  }
+}
+
+/*
+ * Shrink: sets flex-shrink style
+ * - style for items level
+ * use: @include vi-grid--shrink({?shrink: int}, {?safe: bool});
+ * link: https://www.w3schools.com/cssref/css3_pr_flex-shrink.asp
+ * original style: flex-shrink
+ * original value: 1
+ * parameters:
+ *   $grow - shrink style
+ *           optional parameter
+ *           type: int
+ *           default style: 1
+ *           possible values: any int
+ *   $safe - safe mod
+ *           optional parameter
+ *            if it is enabled you can not use invalid values
+ *           type: bool
+ *           default value: true
+ *           possible values: true|false
+ */
+@mixin vi-grid--shrink(
+  $shrink: 1,
+  $safe:   $vi-grid--safe
+) {
+  @if $safe and type-of($shrink) == number {
+    flex-shrink: $shrink;
+  } @else {
+    flex-shrink: $shrink;
+  }
+}
+
+/*
+ * Basis: sets flex-basis style
+ * - style for items level
+ * url: https://www.w3schools.com/cssref/css3_pr_flex-basis.asp
+ * use: @include vi-grid--basis({?basis: string|units|percentage});
+ * original style: auto
+ * parameters:
+ *   $basis - basis style
+ *            optional parameter
+ *            type: string|px|em|rem|percentage
+ *            default style: auto
+ *            possible values: auto|any units value|percentage
+ */
+@mixin vi-grid--basis(
+  $basis: auto
+) {
+  flex-basis: $basis;
+}

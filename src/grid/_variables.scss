@@ -1,0 +1,81 @@
+@charset "UTF-8";
+
+/*
+ * Pure mod
+ * type: bool
+ * default value: true
+ * possible value: true|false
+ */
+$vi-grid--pure-mod: true !default;
+
+/*
+ * Number of columns
+ * type: int
+ * default values: 12
+ * possible values: any int
+ */
+$vi-grid--columns: 12 !default;
+
+/*
+ * Indents on both sides of the Container
+ * type: units
+ * default value: 20px
+ * possible values: any units value
+ */
+$vi-grid--gutter-container: 20px !default;
+
+/*
+ * Indents on both sides of the Row
+ * type: units
+ * default value: $vi-grid--gutter-container / 2
+ * possible values: any units value
+ */
+$vi-grid--gutter-row: $vi-grid--gutter-container / 2 !default;
+
+/*
+ * Indents on both sides of the Column
+ * type: units
+ * default value: $vi-grid--gutter-container / 4
+ * possible values: any units value
+ */
+$vi-grid--gutter-column: $vi-grid--gutter-container / 4 !default;
+
+/*
+ * Type of indents
+ * type: string
+ * default value: padding
+ * possible values: padding|margin
+ */
+$vi-grid--gutter-method: padding !default;
+
+/*
+ * Direction of flex
+ * type: string
+ * default value: row
+ * possible values: row|row-reverse|column|column-reverse
+ */
+$vi-grid--direction: row !default;
+
+/*
+ * Align of row items
+ * type: string
+ * default value: flex-start
+ * possible values: flex-start|flex-end|center|space-between|space-around|stretch
+ */
+$vi-grid--row-align: flex-start !default;
+
+/*
+ * Direction for reverse
+ * type: string
+ * default value: row
+ * possible values: row|column
+ */
+$vi-grid--reverse-direction: row !default;
+
+/*
+ * Safe mod
+ * type: bool
+ * default value: true
+ * possible value: true|false
+ */
+$vi-grid--safe: true !default;

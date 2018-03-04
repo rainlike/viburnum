@@ -1,0 +1,12 @@
+{
+  "title": "Viburnum",
+  "files": ["/src/**/*.scss"],
+  "target": "styleguide",
+  "css": "/lib/viburnum.css",
+  "scripts": [""],
+  "namespace": "page",
+  "verbose": 3,
+  "counterCSS": null,
+  "staticLipsum": false,
+  "placeholderService": false
+}

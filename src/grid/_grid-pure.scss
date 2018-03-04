@@ -1,0 +1,341 @@
+@charset "UTF-8";
+
+// Variables
+@import "variables";
+@import "originals";
+
+@mixin vi-grid--container(
+  $gutter:        $vi-grid--gutter-container,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  box-sizing:              border-box;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+  @if $gutter-method == padding {
+    margin-right: auto;
+    margin-left:  auto;
+  }
+}
+
+@mixin vi-grid--row(
+  $direction:     $vi-grid--direction,
+  $align:         null,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  display:                 flex;
+  flex-direction:          $direction;
+  flex-wrap:               wrap;
+  box-sizing:              border-box;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+  @if $align {
+    align-content: $align;
+  }
+}
+
+@mixin vi-grid--column-auto(
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  flex-grow:               1;
+  flex-basis:              0;
+  max-width:               100%;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+}
+@mixin vi-grid--col-auto(
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--column-auto($gutter, $gutter-method);
+}
+
+@mixin vi-grid--column(
+  $span,
+  $columns:       $vi-grid--columns,
+  $offset:        null,
+  $safe:          $vi-grid--safe,
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @if $span == 0 {
+    $span: 1;
+  }
+  @if $columns == auto {
+    $columns: $vi-grid--columns;
+  }
+  @if $safe and $span > $columns {
+    $span: $columns;
+  }
+  box-sizing:              border-box;
+  flex-grow:               0;
+  flex-shrink:             0;
+  #{$gutter-method}-right: $gutter;
+  #{$gutter-method}-left:  $gutter;
+  flex-basis:              ((100% / $columns) * $span);
+  max-width:               ((100% / $columns) * $span);
+  @if $offset {
+    @if $safe and $span + $offset > $columns {
+      $offset: $columns - $span;
+    }
+    $span-offset: ((100% / $columns) * 1);
+    margin-left: $span-offset * $offset;
+  }
+}
+@mixin vi-grid--col(
+  $span,
+  $columns:       $vi-grid--columns,
+  $offset:        null,
+  $safe:          $vi-grid--safe,
+  $gutter:        $vi-grid--gutter-column,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--column($span, $columns, $offset, $safe, $gutter, $gutter-method);
+}
+
+@mixin vi-grid--start() {
+  justify-content: flex-start;
+  text-align:      start;
+}
+
+@mixin vi-grid--center() {
+  justify-content: center;
+  text-align:      center;
+}
+
+@mixin vi-grid--end() {
+  justify-content: flex-end;
+  text-align:      end;
+}
+
+@mixin vi-grid--top() {
+  align-items: flex-start;
+}
+
+@mixin vi-grid--middle() {
+  align-items: center;
+}
+@mixin vi-grid--mid() {
+  @include vi-grid--middle();
+}
+
+@mixin vi-grid--bottom() {
+  align-items: flex-end;
+}
+@mixin vi-grid--bot() {
+  @include vi-grid--bottom();
+}
+
+@mixin vi-grid--top-self() {
+  align-self: flex-start;
+}
+
+@mixin vi-grid--middle-self() {
+  align-self: center;
+}
+@mixin vi-grid--mid-self() {
+  @include vi-grid--middle-self();
+}
+
+@mixin vi-grid--bottom-self() {
+  align-self: flex-end;
+}
+@mixin vi-grid--bot-self() {
+  @include vi-grid--bottom-self();
+}
+
+@mixin vi-grid--around(
+  $withRow:       false,
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @if $withRow {
+    @include vi-grid--row($direction, $align, $gutter, $gutter-method);
+  }
+  justify-content: space-around;
+}
+@mixin vi-grid--row-around(
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--around(true, $direction, $align, $gutter, $gutter-method);
+}
+
+@mixin vi-grid--between(
+  $withRow:       false,
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @if $withRow {
+    @include vi-grid--row($direction, $align, $gutter, $gutter-method);
+  }
+  justify-content: space-between;
+}
+@mixin vi-grid--row-between(
+  $direction:     $vi-grid--direction,
+  $align:         $vi-grid--row-align,
+  $gutter:        $vi-grid--gutter-row,
+  $gutter-method: $vi-grid--gutter-method
+) {
+  @include vi-grid--between(true, $direction, $align, $gutter, $gutter-method);
+}
+
+@mixin vi-grid--first() {
+  order: -1;
+}
+
+@mixin vi-grid--last() {
+  order: 1;
+}
+
+@mixin vi-grid--order(
+  $order
+) {
+  order: $order;
+}
+@mixin vi-grid--reverse(
+  $direction: $vi-grid--reverse-direction
+) {
+  @if $direction == row {
+    flex-direction: row-reverse;
+  } @else if $direction == column {
+    flex-direction: column-reverse;
+  }
+}
+
+@mixin vi-grid--flex(
+  $display: flex,
+  $safe:    $vi-grid--safe
+) {
+  @if $safe and $display == flex {
+    display: flex;
+  } @else if  $safe and $display == inline-flex or $display == inline {
+    display: inline-flex;
+  } @else {
+    display: $display;
+  }
+}
+
+@mixin vi-grid--direction(
+  $direction: row,
+  $safe:      $vi-grid--safe
+) {
+  @if $safe == false {
+    flex-direction: $direction;
+  } @else {
+    flex-direction: row;
+    @each $temp in $original--flex-directions {
+      @if $direction == $temp {
+        flex-direction: $temp;
+      }
+    }
+  }
+}
+
+@mixin vi-grid--wrap(
+  $wrap: null,
+  $safe: $vi-grid--safe
+) {
+  @if $safe == false {
+    flex-wrap: $wrap;
+  } @else {
+    flex-wrap: nowrap;
+    @each $temp in $original--flex-wraps {
+      @if $wrap == $temp {
+        flex-wrap: $temp;
+      }
+    }
+  }
+}
+
+@mixin vi-grid--flow(
+  $direction: row,
+  $wrap:      nowrap,
+  $safe:      $vi-grid--safe
+) {
+  @include vi-grid--direction($direction, $safe);
+  @include vi-grid--wrap($wrap, $safe);
+}
+
+@mixin vi-grid--justify-content(
+  $justify: flex-start,
+  $safe:    $vi-grid--safe
+) {
+  @if $safe == false {
+    justify-content: $justify;
+  } @else {
+    justify-content: flex-start;
+    @each $temp in $original--flex-justify-contents {
+      @if $justify == $temp {
+        justify-content: $temp;
+      }
+    }
+  }
+}
+
+@mixin vi-grid--align-items(
+  $align: stretch,
+  $safe:  $vi-grid--safe
+) {
+  @if $safe == false {
+    align-items: $align;
+  } @else {
+    align-items: stretch;
+    @each $temp in $original--flex-align-items {
+      @if $align == $temp {
+        align-items: $temp;
+      }
+    }
+  }
+}
+
+@mixin vi-grid--align-content(
+  $align: stretch,
+  $safe:  $vi-grid--safe
+) {
+  @if $safe == false {
+    align-content: $align;
+  } @else {
+    align-content: stretch;
+    @each $temp in $original--flex-align-contents {
+      @if $align == $temp {
+        align-content: $temp;
+      }
+    }
+  }
+}
+
+@mixin vi-grid--grow(
+  $grow: 0,
+  $safe: $vi-grid--safe
+) {
+  @if $safe and type-of($grow) == number {
+    flex-grow: $grow;
+  } @else {
+    flex-grow: $grow;
+  }
+}
+
+@mixin vi-grid--shrink(
+  $shrink: 1,
+  $safe:   $vi-grid--safe
+) {
+  @if $safe and type-of($shrink) == number {
+    flex-shrink: $shrink;
+  } @else {
+    flex-shrink: $shrink;
+  }
+}
+
+@mixin vi-grid--basis(
+  $basis: auto
+) {
+  flex-basis: $basis;
+}

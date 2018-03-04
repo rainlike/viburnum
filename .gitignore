@@ -1,0 +1,8 @@
+# Envirinment
+/.idea/
+
+# Vendors
+/node_modules/
+
+# Logs & debug
+/log/

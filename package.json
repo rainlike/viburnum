@@ -1,0 +1,31 @@
+{
+  "name": "viburnum",
+  "version": "0.0.1",
+  "description": "SCSS tools library",
+  "main": "index.js",
+  "author": "Alexander Saveliev <alex@rainlike.com>",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "sass",
+    "flex",
+    "grid"
+  ],
+  "devDependencies": {
+    "autoprefixer": "^8.0.0",
+    "gulp": "^3.9.1",
+    "npx": "^9.7.1",
+    "nucleus-styleguide": "^1.1.1",
+    "postcss": "^6.0.19",
+    "stylelint": "^9.1.1",
+    "stylelint-config-recommended": "^2.1.0",
+    "stylelint-config-recommended-scss": "^3.1.0",
+    "stylelint-config-standard": "^18.2.0",
+    "stylelint-declaration-strict-value": "^1.0.4",
+    "stylelint-declaration-use-variable": "^1.6.1",
+    "stylelint-no-unsupported-browser-features": "^2.0.0",
+    "stylelint-order": "^0.8.1",
+    "stylelint-scss": "^2.4.0",
+    "stylelint-selector-bem-pattern": "^2.0.0"
+  }
+}
